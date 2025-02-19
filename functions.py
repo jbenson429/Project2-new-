@@ -190,25 +190,42 @@ def merge_sort(arr):
     return arr
 
 def quick_sort(arr):
-    # Base case: if the list has one or zero elements, it's already sorted
-    if len(arr) <= 1:
-        return arr
-    
-    # Choose a pivot (we'll use the last element as the pivot)
-    pivot = arr[-1]
-    
-    # Partition the array into two halves: one with elements smaller than pivot, one with elements larger
-    left = []
-    right = []
-    
-    for x in arr[:-1]:  # Iterate over all elements except the pivot
-        if x <= pivot:
-            left.append(x)
-        else:
-            right.append(x)
-    
-    # Recursively apply quick_sort to the left and right partitions, and concatenate the result with the pivot
-    return quick_sort(left) + [pivot] + quick_sort(right)
+    stack = [(0, len(arr) - 1)]  # Stack to simulate recursion
+
+    while stack:
+        low, high = stack.pop()
+        if low < high:
+            pi = partition(arr, low, high)  # Get pivot index
+
+            # Push left and right partitions onto the stack
+            stack.append((low, pi - 1))
+            stack.append((pi + 1, high))
+
+def median_of_three(arr, low, high):
+    mid = (low + high) // 2
+    a, b, c = arr[low], arr[mid], arr[high]
+
+    if (a < b < c) or (c < b < a):
+        return mid  # Median is middle
+    elif (b < a < c) or (c < a < b):
+        return low  # Median is first
+    else:
+        return high  # Median is last
+
+def partition(arr, low, high):
+    pivot_index = median_of_three(arr, low, high)
+    arr[pivot_index], arr[high] = arr[high], arr[pivot_index]  # Swap pivot to end
+
+    pivot = arr[high]
+    i = low - 1
+
+    for j in range(low, high):
+        if arr[j] <= pivot:
+            i += 1
+            arr[i], arr[j] = arr[j], arr[i]
+
+    arr[i + 1], arr[high] = arr[high], arr[i + 1]
+    return i + 1
 
 def heap_sort(arr):
     n = len(arr)
